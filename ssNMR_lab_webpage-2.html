@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solid-State NMR Laboratory @ IBBR – UMD|NIST</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --muted: #5a5a5a;
+    --pale: #8a8a8a;
+    --rule: #e0ddd6;
+    --surface: #f7f5f0;
+    --page: #fdfcf9;
+    --accent: #2a5c8a;
+    --accent-light: #e8f0f8;
+    --accent-mid: #b8cfe4;
+    --red: #8c2e2e;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--page);
+    color: var(--ink);
+    font-size: 16px;
+    line-height: 1.7;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--page);
+    border-bottom: 1px solid var(--rule);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 5vw;
+    height: 60px;
+    box-sizing: border-box;
+  }
+  .nav-brand {
+    font-family: 'DM Serif Display', serif;
+    font-size: 15px;
+    letter-spacing: 0.01em;
+    color: var(--accent);
+    text-decoration: none;
+    max-width: 320px;
+    line-height: 1.25;
+  }
+  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links a {
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color .2s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* ── HERO ── */
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 92vh;
+    overflow: hidden;
+  }
+  .hero-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 7vw 5vw 7vw 7vw;
+    border-right: 1px solid var(--rule);
+  }
+  .hero-eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 28px; height: 1px;
+    background: var(--accent);
+  }
+  .hero-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(32px, 4vw, 54px);
+    line-height: 1.12;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .hero-title em {
+    font-style: italic;
+    color: var(--accent);
+  }
+  .hero-affil {
+    font-size: 14px;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    margin-bottom: 36px;
+    font-weight: 300;
+  }
+  .hero-lead {
+    font-size: 17px;
+    color: var(--muted);
+    max-width: 460px;
+    line-height: 1.75;
+    margin-bottom: 48px;
+    font-weight: 300;
+  }
+  .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; }
+  .btn-primary {
+    display: inline-block;
+    padding: 12px 28px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: background .2s;
+  }
+  .btn-primary:hover { background: #1e4a73; }
+  .btn-ghost {
+    display: inline-block;
+    padding: 12px 28px;
+    border: 1px solid var(--rule);
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: border-color .2s, color .2s;
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+  .hero-right {
+    position: relative;
+    background: var(--surface);
+    display: flex; flex-direction: column;
+    justify-content: flex-end;
+    padding: 5vw;
+    overflow: hidden;
+  }
+  /* Decorative NMR spectrum lines */
+  .spectrum-canvas {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+  }
+  .hero-stat-grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.18);
+    z-index: 2;
+  }
+  .hero-stat {
+    background: rgba(255,255,255,0.08);
+    padding: 28px 24px;
+  }
+  .hero-stat-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 38px;
+    line-height: 1;
+    color: #fff;
+    margin-bottom: 6px;
+  }
+  .hero-stat-label {
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.6);
+  }
+  .hero-tagline {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(20px, 2.5vw, 30px);
+    line-height: 1.35;
+    color: rgba(255,255,255,0.75);
+    margin-bottom: 2rem;
+  }
+
+  /* ── SECTION SHARED ── */
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  section { padding: 90px 5vw; }
+  .section-header {
+    display: flex; align-items: baseline; gap: 20px;
+    margin-bottom: 56px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .section-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(24px, 3vw, 36px);
+    color: var(--ink);
+    font-weight: 400;
+  }
+
+  /* ── ABOUT ── */
+  #about {
+    background: var(--surface);
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+  .about-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+  .about-body p {
+    font-size: 17px;
+    color: var(--muted);
+    font-weight: 300;
+    line-height: 1.8;
+    margin-bottom: 20px;
+    max-width: 580px;
+  }
+  .about-body p:last-child { margin-bottom: 0; }
+  .about-sidebar {}
+  .sidebar-block {
+    border-left: 3px solid var(--accent);
+    padding-left: 20px;
+    margin-bottom: 36px;
+  }
+  .sidebar-block:last-child { margin-bottom: 0; }
+  .sidebar-label {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--pale);
+    margin-bottom: 8px;
+  }
+  .sidebar-value {
+    font-size: 14px;
+    color: var(--ink);
+    line-height: 1.6;
+  }
+  .sidebar-value a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .sidebar-value a:hover { text-decoration: underline; }
+
+  /* ── TEAM ── */
+  #team { background: var(--page); }
+  .team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 2px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+  }
+  .team-card {
+    background: var(--page);
+    padding: 36px 28px;
+    transition: background .2s;
+  }
+  .team-card:hover { background: var(--surface); }
+  .team-avatar {
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: var(--accent-light);
+    border: 1px solid var(--accent-mid);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    color: var(--accent);
+    margin-bottom: 20px;
+    letter-spacing: 0.02em;
+  }
+  .team-role {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+  .team-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    color: var(--ink);
+    margin-bottom: 10px;
+    line-height: 1.2;
+  }
+  .team-bio {
+    font-size: 13.5px;
+    color: var(--muted);
+    line-height: 1.65;
+    font-weight: 300;
+  }
+  .team-tags {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-top: 16px;
+  }
+  .tag {
+    font-size: 11px;
+    padding: 3px 9px;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    color: var(--pale);
+    letter-spacing: 0.04em;
+  }
+
+  /* ── PUBLICATIONS ── */
+  #publications { background: var(--surface); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+  .pub-list { display: flex; flex-direction: column; gap: 0; }
+  .pub-item {
+    display: grid;
+    grid-template-columns: 56px 1fr auto;
+    gap: 24px;
+    align-items: start;
+    padding: 28px 0;
+    border-bottom: 1px solid var(--rule);
+    transition: background .15s;
+  }
+  .pub-item:last-child { border-bottom: none; }
+  .pub-year {
+    font-family: 'DM Serif Display', serif;
+    font-size: 13px;
+    color: var(--pale);
+    padding-top: 2px;
+    text-align: right;
+  }
+  .pub-content {}
+  .pub-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1.45;
+    margin-bottom: 5px;
+  }
+  .pub-authors {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 4px;
+    font-weight: 300;
+  }
+  .pub-journal {
+    font-size: 12.5px;
+    color: var(--pale);
+    font-style: italic;
+  }
+  .pub-journal strong {
+    font-style: normal;
+    font-weight: 500;
+    color: var(--muted);
+  }
+  .pub-link {
+    font-size: 12px;
+    color: var(--accent);
+    text-decoration: none;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    flex-shrink: 0;
+    padding-top: 3px;
+    white-space: nowrap;
+  }
+  .pub-link:hover { text-decoration: underline; }
+  .pub-badge {
+    display: inline-block;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    background: var(--accent-light);
+    color: var(--accent);
+    border-radius: 2px;
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--ink);
+    color: rgba(255,255,255,0.45);
+    padding: 48px 5vw;
+  }
+  .footer-brand {
+    font-family: 'DM Serif Display', serif;
+    color: rgba(255,255,255,0.75);
+    font-size: 14px;
+    line-height: 1.4;
+    max-width: 300px;
+  }
+  .footer-links { display: flex; flex-direction: column; gap: 6px; text-align: right; }
+  .footer-links a {
+    color: rgba(255,255,255,0.45);
+    text-decoration: none;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: color .2s;
+  }
+  .footer-links a:hover { color: rgba(255,255,255,0.8); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: 1fr; min-height: auto; }
+    .hero-left { border-right: none; border-bottom: 1px solid var(--rule); padding: 10vw 6vw; }
+    .hero-right { padding: 8vw 6vw; }
+    .about-grid { grid-template-columns: 1fr; gap: 40px; }
+    .nav-links { display: none; }
+    .pub-item { grid-template-columns: 48px 1fr; }
+    .pub-link { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-brand" href="#">ssNMR Lab @ IBBR</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#team">Team</a></li>
+    <li><a href="#publications">Publications</a></li>
+    <li><a href="/cdn-cgi/l/email-protection#cba1a0a1aea4a58bbea6afe5aeafbe">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" style="padding:0;">
+  <div class="hero-left" style="max-width:100%;">
+    <div class="hero-eyebrow">Institute for Bioscience &amp; Biotechnology Research</div>
+    <h1 class="hero-title">Solid-State<br><em>NMR</em><br>Laboratory</h1>
+    <p class="hero-affil">University of Maryland &amp; NIST · Rockville, MD</p>
+    <p class="hero-lead">We develop and apply advanced solid-state NMR methods — including time-resolved ssNMR and dynamic nuclear polarization — to enable characterization of biomolecules in unconventional states that were previously beyond experimental access.</p>
+    <div class="hero-actions">
+      <a href="#publications" class="btn-primary">View Publications</a>
+      <a href="#team" class="btn-ghost">Meet the Team</a>
+    </div>
+  </div>
+
+  <div class="hero-right" style="padding:0;position:relative;overflow:hidden;">
+    <!-- IBBR building photo -->
+    <img src="ibbr-building.png"
+         alt="IBBR building"
+         style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;object-position:center;display:block;">
+    <!-- Dark overlay so stats remain readable -->
+    <div style="position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(to top, rgba(10,20,35,0.82) 0%, rgba(10,20,35,0.45) 55%, rgba(10,20,35,0.15) 100%);"></div>
+
+    <div style="position:relative;z-index:2;padding:5vw;display:flex;flex-direction:column;justify-content:flex-end;height:100%;">
+      <div class="hero-tagline" style="color:rgba(255,255,255,0.75);opacity:1;">Monitoring molecular dynamics in action<br>—we decode the structural language of biomolecules</div>
+
+    <div class="hero-stat-grid" style="margin-top:2rem;">
+      <div class="hero-stat">
+        <div class="hero-stat-num">600</div>
+        <div class="hero-stat-label">MHz Spectrometer</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">4</div>
+        <div class="hero-stat-label">Team Members</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">25+</div>
+        <div class="hero-stat-label">Publications</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">0</div>
+        <div class="hero-stat-label">Active Grants</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about"><div class="container">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <h2 class="section-title">About the Laboratory</h2>
+  </div>
+  <div class="about-grid">
+    <div class="about-body">
+      <p>Our laboratory focuses on the development and application of biophysical methods — primarily solid-state NMR — to characterize the structures and molecular mechanisms of biomolecules. We work with a wide range of samples including insoluble, lyophilized, and frozen systems, obtaining atomic-level structural and dynamic information inaccessible by solution-state methods.</p>
+      <p>A central innovation of the group is <strong>time-resolved solid-state NMR</strong>, which couples rapid-freeze-quenching with sensitivity-enhanced detection via dynamic nuclear polarization (DNP). This approach captures short-lived intermediate states during kinetically driven reactions — bridging the gap between equilibrium structural studies and the transient events that govern biological function. </p>
+      <p>Current research topics include the development of ssNMR measurement techniques to assess the quality attributes of therapeutics—including structural studies of antigen–adjuvant vaccine systems and higher-order structure characterization of monoclonal antibodies—and the mechanistic elucidation of protein self-assembly processes relevant to drug development.</p>
+    </div>
+    <div class="about-sidebar">
+      <div class="sidebar-block">
+        <div class="sidebar-label">Location</div>
+        <div class="sidebar-value">IBBR, 9600 Gudelsky Drive<br>Rockville, MD 20850</div>
+      </div>
+      <div class="sidebar-block">
+        <div class="sidebar-label">Affiliations</div>
+        <div class="sidebar-value">
+          University of Maryland,<br>College Park<br>
+          National Institute of Standards<br>&amp; Technology (NIST)
+        </div>
+      </div>
+      <div class="sidebar-block">
+        <div class="sidebar-label">Research Areas</div>
+        <div class="sidebar-value">
+          Time-resolved solid-state NMR<br>
+          Dynamic nuclear polarization (DNP)<br>
+          Protein self-assembly<br>
+          Therapeutic quality assessment
+        </div>
+      </div>
+      <div class="sidebar-block">
+        <div class="sidebar-label">Contact</div>
+        <div class="sidebar-value">
+          jkjeon [at] umd.edu<br>
+          <a href="tel:2403146389">(240) 314-6389</a>
+        </div>
+      </div>
+    </div>
+  </div></div>
+</section>
+
+<!-- TEAM -->
+<section id="team"><div class="container">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <h2 class="section-title">Team</h2>
+  </div>
+  <div class="team-grid">
+
+    <!-- PI -->
+    <div class="team-card">
+      <div class="team-avatar" style="background:none;border:none;padding:0;overflow:hidden;">
+        <img src="https://www.ibbr.umd.edu/storage/media/12521/conversions/Jaekyun_office-preview.jpg"
+             alt="Dr. Jaekyun Jeon"
+             style="width:120px;height:120px;object-fit:cover;object-position:center top;border-radius:50%;display:block;">
+      </div>
+      <div class="team-role">Principal Investigator</div>
+      <div class="team-name">Dr. Jaekyun Jeon</div>
+      <div class="team-bio">Dr. Jeon is an Assistant Research Professor at IBBR. He is primarily a solid-state NMR spectroscopist, but also a tool builder who aims to expand the toolbox in the field.</div>
+      <div class="team-tags">
+        <span class="tag">Time-resolved ssNMR</span>
+        <span class="tag">DNP</span>
+        <span class="tag">Protein self-assembly</span>
+        <span class="tag">Therapeutics QA</span>
+      </div>
+    </div>
+
+    <!-- Postdoc -->
+    <div class="team-card">
+      <div class="team-avatar" style="background:none;border:none;padding:0;overflow:hidden;">
+        <img src="pk.png"
+             alt="Dr. Patrick Keating"
+             style="width:120px;height:120px;object-fit:cover;object-position:center top;border-radius:50%;display:block;">
+      </div>
+      <div class="team-role">NRC Postdoctoral Fellow</div>
+      <div class="team-name">Dr. Patrick Keating</div>
+      <div class="team-bio">Dr. Keating is an NRC Postdoctoral Fellow at NIST working in the Jeon Group at IBBR. He is an experienced biochemist with a background in structural biology and viral membrane fusion. At IBBR, his research focuses on employing solid-state NMR methods to characterize antigen–adjuvant interactions in vaccine systems.</div>
+      <div class="team-tags">
+        <span class="tag">Structural biology</span>
+        <span class="tag">Viral membrane fusion</span>
+        <span class="tag">ssNMR</span>
+      </div>
+    </div>
+
+    <!-- Master's student -->
+    <div class="team-card">
+      <div class="team-avatar" style="background:none;border:none;padding:0;overflow:hidden;">
+        <img src="sp.png"
+             alt="Saloni Palgadkar"
+             style="width:120px;height:120px;object-fit:cover;object-position:center 25%;border-radius:50%;display:block;">
+      </div>
+      <div class="team-role">Master Intern</div>
+      <div class="team-name">Saloni Palgadkar</div>
+      <div class="team-bio">Saloni is an M.S. student in the Pharmaceutical Sciences program at the University of Maryland, Baltimore. Working in the Jeon Group, she applies solid-state NMR to pharmaceutical and biomolecular systems, gaining hands-on experience with sample preparation and NMR data acquisition.</div>
+      <div class="team-tags">
+        <span class="tag">Pharmaceutical sciences</span>
+        <span class="tag">ssNMR</span>
+        <span class="tag">Sample preparation</span>
+      </div>
+    </div>
+
+    <!-- Undergrad -->
+    <div class="team-card">
+      <div class="team-avatar" style="background:none;border:none;padding:0;overflow:hidden;">
+        <img src="nr.png"
+             alt="Niloufar Raeisinafchi"
+             style="width:120px;height:120px;object-fit:cover;object-position:center top;border-radius:50%;display:block;">
+      </div>
+      <div class="team-role">Undergraduate Intern</div>
+      <div class="team-name">Niloufar Raeisinafchi</div>
+      <div class="team-bio">Niloufar is an undergraduate student in the Bioscience program at the University of Maryland, College Park. Working in the Jeon Group, she assists with sample preparation and data collection, gaining first-hand experience in biophysical methods and solid-state NMR research.</div>
+      <div class="team-tags">
+        <span class="tag">Bioscience</span>
+        <span class="tag">Sample prep</span>
+        <span class="tag">ssNMR</span>
+      </div>
+    </div>
+
+  </div></div>
+</section>
+
+<!-- PUBLICATIONS -->
+<section id="publications"><div class="container">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <h2 class="section-title">Publications</h2>
+  </div>
+  <div class="pub-list">
+
+    <div class="pub-item">
+      <div class="pub-year">2025</div>
+      <div class="pub-content">
+        <div class="pub-title">Kinetic investigation of calcium-induced Sorcin aggregation by stopped-flow light scattering</div>
+        <div class="pub-authors">Qiushi Ye, Kathleen Joyce Carillo, Nicolas Delaeter, Lei Zhang, Jaekyun Jeon, Yanxin Liu</div>
+        <div class="pub-journal"><strong>Biochemical Journal</strong> · 482(21):1677–1688</div>
+      </div>
+      <a href="https://pubmed.ncbi.nlm.nih.gov/41133884" class="pub-link" target="_blank">PubMed ↗</a>
+    </div>
+
+    <div class="pub-item">
+      <div class="pub-year">2024</div>
+      <div class="pub-content">
+        <div class="pub-title">Quantification of rapid cooling of glycerol/water solutions based on photoluminescence from Thioflavin T</div>
+        <div class="pub-authors">Robert Tycko, Jaekyun Jeon</div>
+        <div class="pub-journal"><strong>Journal of Physical Chemistry B</strong> · 128(49):12310–12324</div>
+      </div>
+      <a href="https://pubmed.ncbi.nlm.nih.gov/39627173" class="pub-link" target="_blank">PubMed ↗</a>
+    </div>
+
+    <div class="pub-item">
+      <div class="pub-year">2023</div>
+      <div class="pub-content">
+        <div class="pub-badge">Featured</div>
+        <div class="pub-title">Early events in amyloid-β self-assembly probed by time-resolved solid-state NMR and light scattering</div>
+        <div class="pub-authors">Jaekyun Jeon, Wai-Ming Yau, Robert Tycko</div>
+        <div class="pub-journal"><strong>Nature Communications</strong> · 14(1):2964</div>
+      </div>
+      <a href="https://pubmed.ncbi.nlm.nih.gov/37221174" class="pub-link" target="_blank">PubMed ↗</a>
+    </div>
+
+    <div class="pub-item">
+      <div class="pub-year">2022</div>
+      <div class="pub-content">
+        <div class="pub-title">Time-resolved solid-state NMR of biomolecular processes with millisecond time resolution</div>
+        <div class="pub-authors">Jaekyun Jeon, C. Blake Wilson, Wai-Ming Yau, Kent R. Thurber, Robert Tycko</div>
+        <div class="pub-journal"><strong>Journal of Magnetic Resonance</strong> · 342:107285</div>
+      </div>
+      <a href="https://pubmed.ncbi.nlm.nih.gov/35998398" class="pub-link" target="_blank">PubMed ↗</a>
+    </div>
+
+    <div class="pub-item">
+      <div class="pub-year">2022</div>
+      <div class="pub-content">
+        <div class="pub-title">Nitroxide-based triradical dopants for efficient low-temperature dynamic nuclear polarization in aqueous solutions over a broad pH range</div>
+        <div class="pub-authors">Wai-Ming Yau, C. Blake Wilson, Jaekyun Jeon, Robert Tycko</div>
+        <div class="pub-journal"><strong>Journal of Magnetic Resonance</strong> · 342:107284</div>
+      </div>
+      <a href="https://pubmed.ncbi.nlm.nih.gov/35986970" class="pub-link" target="_blank">PubMed ↗</a>
+    </div>
+
+    <div class="pub-item">
+      <div class="pub-year">2022</div>
+      <div class="pub-content">
+        <div class="pub-title">Quantitative agreement between conformational substates of holo calcium-loaded calmodulin detected by double electron-electron resonance EPR and predicted by molecular dynamics simulations</div>
+        <div class="pub-authors">Thomas Schmidt, David Wang, Jaekyun Jeon, Charles D. Schwieters, G. Marius Clore</div>
+        <div class="pub-journal"><strong>Journal of the American Chemical Society</strong> · 144(27):12043–12051</div>
+      </div>
+      <a href="https://pubmed.ncbi.nlm.nih.gov/35759799" class="pub-link" target="_blank">PubMed ↗</a>
+    </div>
+
+    <div class="pub-item">
+      <div class="pub-year">2022</div>
+      <div class="pub-content">
+        <div class="pub-title">Time-resolved DEER EPR and solid-state NMR afford kinetic and structural elucidation of substrate binding to Ca²⁺-ligated calmodulin</div>
+        <div class="pub-authors">Thomas Schmidt, Jaekyun Jeon, Wai-Ming Yau, Charles D. Schwieters, Robert Tycko, G. Marius Clore</div>
+        <div class="pub-journal"><strong>Proceedings of the National Academy of Sciences</strong> · 119(6):e2122308119</div>
+      </div>
+      <a href="https://pubmed.ncbi.nlm.nih.gov/35105816" class="pub-link" target="_blank">PubMed ↗</a>
+    </div>
+
+    <div class="pub-item">
+      <div class="pub-year">2021</div>
+      <div class="pub-content">
+        <div class="pub-title">Curvature of the retroviral capsid assembly is modulated by a molecular switch</div>
+        <div class="pub-authors">Tyrone Thames, Alexander J. Bryer, Xin Qiao, Jaekyun Jeon, Ryan Weed, Kaylie Janicki, Bingwen Hu, Peter L. Gor'kov, Ivan Hung, Zhehong Gan, Juan R. Perilla, Bo Chen</div>
+        <div class="pub-journal"><strong>Journal of Physical Chemistry Letters</strong> · 12(32):7768–7776</div>
+      </div>
+      <a href="https://pubmed.ncbi.nlm.nih.gov/34374542" class="pub-link" target="_blank">PubMed ↗</a>
+    </div>
+
+    <div class="pub-item">
+      <div class="pub-year">2020</div>
+      <div class="pub-content">
+        <div class="pub-title">Millisecond time-resolved solid-state NMR reveals a two-stage molecular mechanism for formation of complexes between calmodulin and a target peptide from myosin light chain kinase</div>
+        <div class="pub-authors">Jaekyun Jeon, Wai-Ming Yau, Robert Tycko</div>
+        <div class="pub-journal"><strong>Journal of the American Chemical Society</strong> · 142(50):21220–21232</div>
+      </div>
+      <a href="https://pubmed.ncbi.nlm.nih.gov/33280387" class="pub-link" target="_blank">PubMed ↗</a>
+    </div>
+
+    <div class="pub-item">
+      <div class="pub-year">2020</div>
+      <div class="pub-content">
+        <div class="pub-title">Submillisecond freezing permits cryoprotectant-free EPR double electron-electron resonance spectroscopy</div>
+        <div class="pub-authors">Thomas Schmidt, Jaekyun Jeon, Yusuke Okuno, Sai C. Chiliveri, G. Marius Clore</div>
+        <div class="pub-journal"><strong>ChemPhysChem</strong> · 21(12):1224–1229</div>
+      </div>
+      <a href="https://pubmed.ncbi.nlm.nih.gov/32383308" class="pub-link" target="_blank">PubMed ↗</a>
+    </div>
+
+    <div class="pub-item">
+      <div class="pub-year">2019</div>
+      <div class="pub-content">
+        <div class="pub-title">Application of millisecond time-resolved solid-state NMR to the kinetics and mechanism of melittin self-assembly</div>
+        <div class="pub-authors">Jaekyun Jeon, Kent R. Thurber, Rodolfo Ghirlando, Wai-Ming Yau, Robert Tycko</div>
+        <div class="pub-journal"><strong>Proceedings of the National Academy of Sciences</strong> · 116(34):16717–16722</div>
+      </div>
+      <a href="https://pubmed.ncbi.nlm.nih.gov/31387974" class="pub-link" target="_blank">PubMed ↗</a>
+    </div>
+
+    <div class="pub-item">
+      <div class="pub-year">2017</div>
+      <div class="pub-content">
+        <div class="pub-title">Structural model of the tubular assembly of the Rous Sarcoma Virus capsid protein</div>
+        <div class="pub-authors">Jaekyun Jeon, Xin Qiao, Ivan Hung, Alok K. Mitra, Ambroise Desfosses, Daniel Huang, Peter L. Gor'kov, Rebecca C. Craven, Richard L. Kingston, Zhehong Gan, Fangqiang Zhu, Bo Chen</div>
+        <div class="pub-journal"><strong>Journal of the American Chemical Society</strong> · 139(5):2006–2013</div>
+      </div>
+      <a href="https://pubmed.ncbi.nlm.nih.gov/28094514" class="pub-link" target="_blank">PubMed ↗</a>
+    </div>
+
+    <div class="pub-item">
+      <div class="pub-year">2013</div>
+      <div class="pub-content">
+        <div class="pub-title">Superb resolution and contrast of transmission electron microscopy images of unstained biological samples on graphene-coated grids</div>
+        <div class="pub-authors">Jaekyun Jeon, Michael S. Lodge, Ben D. Dawson, Masa Ishigami, Frank Shewmaker, Bo Chen</div>
+        <div class="pub-journal"><strong>Biochimica et Biophysica Acta – General Subjects</strong> · 1830(6):3807–3815</div>
+      </div>
+      <a href="https://pubmed.ncbi.nlm.nih.gov/23500069" class="pub-link" target="_blank">PubMed ↗</a>
+    </div>
+
+  </div></div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;">
+  <div class="footer-brand">
+    Solid-State NMR Laboratory<br>
+    IBBR · University of Maryland &amp; NIST<br>
+    Rockville, MD 20850
+  </div>
+  <div class="footer-links">
+    <a href="https://ibbr.umd.edu" target="_blank">IBBR Website</a>
+    <a href="https://umd.edu" target="_blank">University</a>
